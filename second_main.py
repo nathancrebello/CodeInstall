@@ -25,7 +25,7 @@ else:
 
     image1_path = r'C:\Users\natha\OneDrive\Documents\install_button.png'
     #text1 = "Install"
-    time.sleep(5)
+    #time.sleep(5)
 
 
 
