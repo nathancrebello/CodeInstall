@@ -18,10 +18,42 @@ import pygetwindow as gw
 
 win = tk.Tk()
 
+def on_yes_button_click():
+    label_ide.config(text="")
+    textbox.insert("1.0", "Write code to download Visual Studio")
+    b_yes.configure(state = tk.DISABLED, bg="green") 
+    b_no.configure(state = tk.DISABLED, bg="red")
+    b_yes.pack_forget()
+    b_no.pack_forget() 
+    win.update()
+    test()
+
+
+    
+
+def on_no_button_click():
+    label_ide.config(text="")
+    b_yes.configure(state = tk.DISABLED, bg="green") 
+    b_no.configure(state = tk.DISABLED, bg="red")
+    b_yes.pack_forget()
+    b_no.pack_forget()
+
+    win.update()
+
+
+
+
 ## main method that runs ai and other code
 def test():
 
+    b.configure(state = tk.DISABLED, bg=win.cget('bg'))
+    ## Updating label to loading
+    label.config(text="Loading")
+    win.update()
+
     user_input = textbox.get("1.0", tk.END).strip()
+ 
+
     print("User input:", user_input)
     # Update the text_label with the user input
     text_label.config(text="Welcome to Code-Install, the ai easy installer")
@@ -34,7 +66,8 @@ def test():
 
     assistant = client.beta.assistants.create(
         name = "Code Assistant",
-        instructions = "Write python script to download installer and ALWAYS OPEN with os.startfile(filename). System is windows, save installer to Downloads. use this download link for java: https://javadl.oracle.com/webapps/download/AutoDL?BundleId=249203_b291ca3e0c8548b5a51d5a5f50063037",
+        instructions = "Write python script to download installer and ALWAYS OPEN with os.startfile(filename). System is windows, save installer to Downloads.",
+        #use this download link for java: https://javadl.oracle.com/webapps/download/AutoDL?BundleId=249203_b291ca3e0c8548b5a51d5a5f50063037
         tools = [{"type": "code_interpreter"}],
         model = "gpt-3.5-turbo"
     )
@@ -97,6 +130,8 @@ def test():
     subprocess.run(['python', '-c', extracted_text], shell=False)
 
 
+
+
     ## Wait for the installer window to open
     time.sleep(5)  # Adjust the delay as needed
 
@@ -118,21 +153,22 @@ def test():
     ## Get Python installer window
     all_windows = gw.getAllTitles()
     matching_window_titles = [title for title in all_windows if "Python" in title]
-
+    tk_window = [title for title in all_windows if "tk" in title]
     ## Desktop and set focus to python window
     desktop = Desktop(backend="win32")
     window = desktop.window(title=matching_window_titles[0])
     #window.set_focus()
     #time.sleep(5)
 
-    ## Minimize other windows
+    ## Minimize other windows except tk and installer
     for window in gw.getAllTitles():
         if window != matching_window_titles[0]:
-            try:
-                other_window = gw.getWindowsWithTitle(window)[0]
-                other_window.minimize()
-            except IndexError:
-                pass
+            if window != tk_window[0]:
+                try:
+                    other_window = gw.getWindowsWithTitle(window)[0]
+                    other_window.minimize()
+                except IndexError:
+                    pass
 
     ## Custom function to locate image with retries
     def locate_image_with_retries(image_path, max_retries=3):
@@ -170,6 +206,41 @@ def test():
     else:
         print("")
 
+    ## changing label to done and then waitig for command
+    label.config(text="Done")
+    win.update()
+
+    win.after(5000, lambda: label.config(text="Waiting for Command"))
+    win.update()
+
+
+    if match:
+        label_ide.config(text= "I see that you've downloaded python...download IDE?")
+        win.update_idletasks()
+
+        b_yes.pack()
+        b_yes.configure(command=on_yes_button_click, state=tk.NORMAL)
+
+
+
+        b_no.pack()
+        b_no.configure(command=on_no_button_click, state=tk.NORMAL)
+
+
+
+        textbox.delete("1.0", tk.END)
+        win.update()
+        ## If button pressed by user then do the stuff below else make it say install again
+        textbox.insert("1.0", "Write code to download visual studio")
+        win.update()
+        textbox.delete("1.0", tk.END)
+        textbox.insert("1.0", "")
+        win.update()
+
+    b.configure(command=test, state=tk.NORMAL)
+    b.config(text = "Install")
+    
+
 ## Setting window size, buttons, labels, and mainloop
 win.geometry("500x400")
 
@@ -181,11 +252,41 @@ b = tk.Button(
 b.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
 text_label = tk.Label(win, text="Welcome to Code-Install, the ai easy installer")
+text_label.configure(bg="grey")
 text_label.pack(side=tk.TOP)
 
 textbox = tk.Text(win, height=1, width=30)
 textbox.pack(side=tk.TOP)
 
+
+## Added loading/done label
+label = tk.Label(win, text = "Waiting for Command")
+label.configure(bg="grey")
+label.pack()
+
+label_ide = tk.Label(win, text = "")
+label_ide.configure(bg="grey")
+label_ide.pack()
+
+
+# Create "Yes" button
+b_yes = tk.Button(win, text="Yes", command=on_yes_button_click)
+
+# Create "No" button
+b_no = tk.Button(win, text="No", command=on_no_button_click)
+
+
+b_yes.pack()
+
+b_no.pack()
+
+
+b_yes.configure(state = tk.DISABLED, bg="green") 
+b_no.configure(state = tk.DISABLED, bg="red")
+b_yes.pack_forget()
+b_no.pack_forget()
+
+win.configure(bg="grey")
 win.mainloop()
 
 '''
@@ -197,11 +298,19 @@ to click
 ## Can give a file full of download links
 ## Can give a file full of pngs of the install/next buttons
 
-## Once language is installed, ask user if they want to download an IDE and set it up (like vs)
+## Once language is installed, ask user if they want to download an IDE and set it up (like vs) -- In Progress
 
-## Need to accept the user-permission window for applications like java (let user do that)
+## Need to accept the user-permission window for applications like java (let user do that) -- DONE
 
-## Need to setup github to store code
+## Need to setup github to store code -- DONE
 
 ## Work on user entries -- Like if they type "download python" it should still work
+
+## Handle when user enters nothing and gibberish
+
+## Figure out why the ide blurb isn't popping up -- DONE.
+
+## Handle exceptions and error (ask user to "retry" button)
+
+
 '''
