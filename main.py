@@ -16,12 +16,15 @@ import pygetwindow as gw
 from PIL import ImageGrab
 import ctypes
 
+
+## Check if user is running code as admin
 def is_admin():
     try:
         return ctypes.windll.shell32.IsUserAnAdmin()
     except:
         return False
 
+## Run code as admin
 def run_as_admin():
     if is_admin():
         return
@@ -37,6 +40,7 @@ run_as_admin()
 
 win = tk.Tk()
 
+## yes button
 def on_yes_button_click():
     label_ide.config(text="")
     textbox.insert("1.0", "Write code to download PyCharm")
@@ -47,9 +51,7 @@ def on_yes_button_click():
     win.update()
     test()
 
-
-    
-
+## No button
 def on_no_button_click():
     label_ide.config(text="")
     b_yes.configure(state = tk.DISABLED, bg="green") 
@@ -146,19 +148,10 @@ def test():
 
     ## Need to differentiate between pip and installer
 
-
     subprocess.run(['python', '-c', extracted_text], shell=False)
-
-
-
 
     ## Wait for the installer window to open
     time.sleep(10)  # Adjust the delay as needed
-
-    ## Find the Python installer window
-    #all_windows = gw.getAllTitles()
-    #matching_window_titles = [title for title in all_windows if "Python" in title]
-
 
     ## Tesseract path
     tess.pytesseract.tesseract_cmd = r'C:\Users\natha\AppData\Local\Programs\Tesseract-OCR\tesseract.exe'
@@ -180,7 +173,14 @@ def test():
     tk_window = [title for title in all_windows if "tk" in title]
     ## Desktop and set focus to python window
     desktop = Desktop(backend="win32")
-    window = desktop.window(title=matching_window_titles[0])
+
+    ## Catch index error
+    try:
+        window = desktop.window(title=matching_window_titles[0])
+    except IndexError as e:
+        print(f"An IndexError occurred: {e}")
+        test()
+
     #window.set_focus()
     #time.sleep(5)
 
@@ -440,10 +440,10 @@ to click
 
 ## keep a lists of paths in a folder (these are images). Separate them by a comma and put them in an array.
    Pass them locations method thing. there should be a heirarchy for the images. when one thing is not there, do the other.
-   ie. If there is no "add path" do "next". If no "next", then finish.
+   ie. If there is no "add path" do "next". If no "next", then finish. -- DONE
 
 
 ## Much better, need to figure out why "blue" next wont click. Also need to work on heirarchy like if next and add are on same page, click add first".
 
-##Figure out filtering tittle thing
+## Figure out filtering tittle thing
 '''
