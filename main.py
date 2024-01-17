@@ -13,6 +13,25 @@ import pytesseract as tess
 import pyautogui
 from PIL import Image
 import pygetwindow as gw
+from PIL import ImageGrab
+import ctypes
+
+def is_admin():
+    try:
+        return ctypes.windll.shell32.IsUserAnAdmin()
+    except:
+        return False
+
+def run_as_admin():
+    if is_admin():
+        return
+    ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, f'"{sys.argv[0]}"', None, 1)
+    sys.exit()
+
+run_as_admin()
+
+
+
 
 ## Initializing window
 
@@ -20,7 +39,7 @@ win = tk.Tk()
 
 def on_yes_button_click():
     label_ide.config(text="")
-    textbox.insert("1.0", "Write code to download Visual Studio")
+    textbox.insert("1.0", "Write code to download PyCharm")
     b_yes.configure(state = tk.DISABLED, bg="green") 
     b_no.configure(state = tk.DISABLED, bg="red")
     b_yes.pack_forget()
@@ -109,6 +128,7 @@ def test():
         print(extracted_text)
     else:
         print("No match found.")
+        test()
 
 
     myList = extracted_text.split("\n")
@@ -133,26 +153,30 @@ def test():
 
 
     ## Wait for the installer window to open
-    time.sleep(5)  # Adjust the delay as needed
+    time.sleep(10)  # Adjust the delay as needed
 
     ## Find the Python installer window
-    all_windows = gw.getAllTitles()
-    matching_window_titles = [title for title in all_windows if "Python" in title]
+    #all_windows = gw.getAllTitles()
+    #matching_window_titles = [title for title in all_windows if "Python" in title]
 
 
     ## Tesseract path
     tess.pytesseract.tesseract_cmd = r'C:\Users\natha\AppData\Local\Programs\Tesseract-OCR\tesseract.exe'
 
-    ## Image paths and associated texts
-    image2_path = r'C:\Users\natha\OneDrive\Documents\realInstallPath.png'
-    #text2 = "Install Now"
 
-    image1_path = r'C:\Users\natha\OneDrive\Documents\pythonpath.png'
-    #text1 = "Add Python"
-
+    
     ## Get Python installer window
     all_windows = gw.getAllTitles()
-    matching_window_titles = [title for title in all_windows if "Python" in title]
+
+    if "PyCharm" in user_input:
+        global titles
+        titles = "PyCharm"
+    if "Python" in user_input:
+        #global titles
+        titles = "Python"
+
+    print(titles)
+    matching_window_titles = [title for title in all_windows if titles in title]
     tk_window = [title for title in all_windows if "tk" in title]
     ## Desktop and set focus to python window
     desktop = Desktop(backend="win32")
@@ -170,41 +194,142 @@ def test():
                 except IndexError:
                     pass
 
+
+        
+    def get_image_paths(folder_path):
+        image_paths_array = []
+
+        # Check if the folder exists
+        if os.path.exists(folder_path):
+            # Iterate through all entries in the folder (files and subdirectories)
+            for root, dirs, files in os.walk(folder_path):
+                # Iterate through files
+                for file in files:
+                    # Check if it's an image file
+                    if file.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.bmp')):
+                        image_paths_array.append(os.path.join(root, file))
+
+        else:
+            print("Folder not found.")
+
+        # Check if we found at least two image files
+        if len(image_paths_array) < 2:
+            print("Not enough image files in the folder and its subdirectories.")
+
+        return image_paths_array
+
+    # Replace 'your_folder_path' with the actual path to your folder
+    folder_path = r'C:\Users\natha\OneDrive\Documents\CodeInstall'
+    path_1 = get_image_paths(folder_path)
+
+    pycharm_paths = [f_path for f_path in path_1 if titles in f_path]
+
+
     ## Custom function to locate image with retries
     def locate_image_with_retries(image_path, max_retries=3):
+        print(image_path+ " entered!")
         for retry in range(max_retries):
             try:
                 location = pyautogui.locateOnScreen(image_path)
                 if location:
                     return location
             except pyautogui.ImageNotFoundException:
+                #print("not found")
                 pass
             time.sleep(1)  # Add a small delay between retries
         return None
 
 
-
     ## Check if the first desired text is present
+    print(pycharm_paths)
 
-    location = locate_image_with_retries(image1_path)
-    if location:
-        text_x, text_y = location[0] + location[2] / 2, location[1] + location[3] / 2
-        pyautogui.moveTo(text_x, text_y, duration=0.5)
-        pyautogui.click()
+    modified_paths = [] 
+    for path in pycharm_paths:
+        modified_path = path.replace('\\', '/')
+        modified_paths.append(modified_path)
+    
+    ##while different go through for loop
+
+    print(modified_paths)
+
+    def capture_screenshot(window_title):
+        # Get the specified window
+        window = gw.getWindowsWithTitle(window_title)
         
-    else:
-        #print(f"First text ({text1}) not found.")
-        print("")
+        if window:
+            # Activate the window
+            #window[0].activate()
 
-    # Check if the second desired text is present
-    location = locate_image_with_retries(image2_path)
-    if location:
-        text_x, text_y = location[0] + location[2] / 2, location[1] + location[3] / 2
-        pyautogui.moveTo(text_x, text_y, duration=0.5)
-        pyautogui.click()
+            # Get the window's position and size
+            left, top, right, bottom = window[0].left, window[0].top, window[0].right, window[0].bottom
 
-    else:
-        print("")
+            # Capture the screenshot
+            screenshot = ImageGrab.grab(bbox=(left, top, right, bottom))
+
+            return screenshot
+        else:
+            print(f"Window with title '{window_title}' not found.")
+            return None
+
+    #a = "diff"
+
+    def compare_and_print(image1, image2):
+        global a
+        text1 = tess.image_to_string(image1)
+        text2 = tess.image_to_string(image2)
+
+        if text1 == text2:
+            a = "same"
+        else:
+            a = "diff"
+
+    # Specify the title of the window you want to capture
+    window_titley = matching_window_titles[0]
+
+    # Capture and compare screenshots every two seconds
+    count =0
+    try:
+        last_click_time = time.time()
+
+        while True:
+            count+=1
+            screenshot1 = capture_screenshot(window_titley)
+            time.sleep(1)
+            screenshot2 = capture_screenshot(window_titley)
+
+            if screenshot1 and screenshot2:
+                compare_and_print(screenshot1, screenshot2)
+
+                for pathy in modified_paths:
+                    
+                    location = locate_image_with_retries(pathy)
+                    print(a)
+                    #if a == "diff" or count ==1:
+
+                    if location:
+                        text_x, text_y = location[0] + location[2] / 2, location[1] + location[3] / 2
+                        pyautogui.moveTo(text_x, text_y, duration=0.5)
+                        pyautogui.click()
+                        pyautogui.moveTo(text_x+50, text_y+50)
+                        print("found "+ pathy)
+
+                        # Update last click time
+                        last_click_time = time.time()
+                        
+                    else:
+                        print("cant find "+pathy)
+                    #else:
+                        #break
+
+            # Check the time elapsed since the last click
+            elapsed_time = time.time() - last_click_time
+            if elapsed_time >= 10:
+                print("No click in the last 10 seconds. Exiting the loop.")
+                break
+
+    except KeyboardInterrupt:
+        print("Capturing stopped.")
+
 
     ## changing label to done and then waitig for command
     label.config(text="Done")
@@ -214,7 +339,7 @@ def test():
     win.update()
 
 
-    if match:
+    if titles == "Python":
         label_ide.config(text= "I see that you've downloaded python...download IDE?")
         win.update_idletasks()
 
@@ -230,8 +355,7 @@ def test():
 
         textbox.delete("1.0", tk.END)
         win.update()
-        ## If button pressed by user then do the stuff below else make it say install again
-        textbox.insert("1.0", "Write code to download visual studio")
+        textbox.insert("1.0", "Write code to download PyCharm")
         win.update()
         textbox.delete("1.0", tk.END)
         textbox.insert("1.0", "")
@@ -312,5 +436,14 @@ to click
 
 ## Handle exceptions and error (ask user to "retry" button)
 
+## Work on installing pycharm
 
+## keep a lists of paths in a folder (these are images). Separate them by a comma and put them in an array.
+   Pass them locations method thing. there should be a heirarchy for the images. when one thing is not there, do the other.
+   ie. If there is no "add path" do "next". If no "next", then finish.
+
+
+## Much better, need to figure out why "blue" next wont click. Also need to work on heirarchy like if next and add are on same page, click add first".
+
+##Figure out filtering tittle thing
 '''
