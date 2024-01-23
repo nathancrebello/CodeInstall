@@ -10,6 +10,8 @@ from PIL import Image, ImageTk
 import ctypes
 import urllib.request
 
+titles = None
+
 
 ## Check if user is running code as admin
 def is_admin():
@@ -22,7 +24,7 @@ def is_admin():
 def run_as_admin():
     if is_admin():
         return
-    ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, f'"{sys.argv[0]}"', None, 0)
+    ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, f'"{sys.argv[0]}"', None, 1)
     sys.exit()
 
 run_as_admin()
@@ -34,8 +36,16 @@ win = tk.Tk()
 
 ## yes button
 def on_yes_button_click():
+    global titles
     label_ide.config(text="")
-    textbox.insert("1.0", "download PyCharm")
+    if titles == "Python":
+        selected_option.set(options[2])
+        titles = "PyCharm"
+            
+    if titles == "Java":
+        selected_option.set(options[4])
+        titles = "IntelliJ"
+            
     b_yes.place_forget()
     b_no.place_forget()
     win.update()
@@ -131,11 +141,27 @@ def search_folder(target_folder, search_term):
         for file_name in files:
             if search_term in file_name:
                 full_path = os.path.join(root, file_name)
-                if file_name.endswith(".lnk") and count !=1:
+                if file_name.endswith(".lnk") and count !=1 and "CodeInstall" not in full_path:
                     print("Found: ", full_path)
                     os.startfile(full_path)
                     
                     count=1
+
+
+def on_select(value):
+    # This function is called when an option is selected
+    
+    global titles
+
+    if value.lower() == "pycharm":
+        titles = "PyCharm"
+    if value.lower() == "python":
+        titles = "Python"
+        print("python")
+    if value.lower() == "java":
+        titles = "Java"
+    if value.lower() == "intellij":
+        titles = "IntelliJ"
 
 
 ## main method that runs ai and other code
@@ -143,18 +169,20 @@ def download_application():
     
     ## Global user input and application name
     global user_input
-    global result
     global titles
+    global result
+    
 
+    print("titles")
     b.configure(state = tk.DISABLED, bg="grey")
     ## Updating label to loading
     label.config(text="Loading")
     win.update()
 
-    user_input = textbox.get("1.0", tk.END).strip()
+    #user_input = textbox.get("1.0", tk.END).strip()
  
 
-    print("User input:", user_input)
+    print("User input:", titles)
     # Update the text_label with the user input
     text_label.config(text="Welcome to Code-Install, the easy installer")
 
@@ -162,14 +190,14 @@ def download_application():
     ## grabbing application name
     
 
-    result = get_word_after_download(user_input.lower())
+    #result = get_word_after_download(user_input.lower())
 
 
     # Example usage:
     file_path = r'C:\Users\natha\OneDrive\Documents\CodeInstall\Links\Download_Links.txt'  # Replace with the actual file path    
     
     
-    link_result = get_greeting(file_path, result)
+    link_result = get_greeting(file_path, titles)
 
     segments = link_result.split(".")
 
@@ -182,7 +210,7 @@ def download_application():
 
     ##fix the end of the thingy like .msi
     url = link_result
-    filename = os.path.join(os.path.expanduser("~"), "Downloads", result+"installer."+last_three_letters)
+    filename = os.path.join(os.path.expanduser("~"), "Downloads", titles.lower()+"installer."+last_three_letters)
 
     # Download the installer
     urllib.request.urlretrieve(url, filename)
@@ -200,18 +228,6 @@ def download_application():
     
     ## Get Python installer window
     all_windows = gw.getAllTitles()
-
-    if "pycharm" in user_input.lower():
-        global titles
-        titles = "PyCharm"
-        #os.system("pip install virtual env")
-    if "python" in user_input.lower():
-        titles = "Python"
-        #os.system("pip install virtual env")
-    if "java" in user_input.lower():
-        titles = "Java"
-    if "node" in user_input.lower():
-        titles = "Node"
 
     print(titles)
     matching_window_titles = [title for title in all_windows if titles in title]
@@ -296,11 +312,10 @@ def download_application():
         print("Capturing stopped.")
 
     
-    if titles == "Python":
+    if titles == "Python" or titles == "Java":
         label_ide.place(relx=0.50, rely=0.7, anchor=tk.CENTER)
-        label_ide.config(text= "I see that you've downloaded python...download IDE?")
-        
-
+        label_ide.config(text= "I see that you've downloaded "+ titles.lower() +"...download IDE?")
+    
         win.update_idletasks()
 
         b_yes.place(relx=0.45, rely=0.8, anchor=tk.CENTER)
@@ -310,13 +325,9 @@ def download_application():
         b_no.place(relx=0.55, rely=0.8, anchor=tk.CENTER)
         b_no.configure(command=on_no_button_click, state=tk.NORMAL, bg = "red")
 
-        textbox.delete("1.0", tk.END)
+
         win.update()
-        textbox.insert("1.0", "download PyCharm")
-        win.update()
-        textbox.delete("1.0", tk.END)
-        textbox.insert("1.0", "")
-        win.update()
+
 
     print(matching_window_titles[0])    
 
@@ -327,7 +338,7 @@ def download_application():
 
     while matching_window_titles[0].strip().lower() in [title.strip().lower() for title in gw.getAllTitles()]:
         print("Still there")
-        if titles == "PyCharm":
+        if titles == "PyCharm" or titles == "IntelliJ":
             location = locate_image_with_retries(r'C:\Users\natha\OneDrive\Documents\CodeInstall\Images\e.png')
             if location:
                 text_x, text_y = location[0] + location[2] / 2, location[1] + location[3] / 2
@@ -337,13 +348,13 @@ def download_application():
                 print("found "+ pathy)
                 # Update last click time
                 last_click_time = time.time()
+        #if titles == ""
         
-
-
-
+    
 
     print("Not anymore")
-    open_application()
+    if(titles.lower()!= "java" and titles.lower!="python"):
+        open_application()
 
     label.config(text="Waiting for Command")
     
@@ -368,27 +379,29 @@ def open_application():
 
 def setup_application():
 
+    global titles
+
     time.sleep(2)
 
 
     print("waited two seconds")
 
-    if "pycharm" in user_input.lower():
-        global titles
-        titles = "PyCharm"
-    if "python" in user_input.lower():
+    if "pycharm" == titles.lower():
+        #global titles
+        print("in lower")
+        titles = "pcsetup"
+    if "python" == titles.lower():
         titles = "Python"
-    if "java" in user_input.lower():
-        titles = "Java"
-    if "pcsetup" in user_input.lower():
-        titles = "Node"
+    if "intellij" == titles.lower():
+        titles = "ijsetup"
+
 
 
     # Replace 'your_folder_path' with the actual path to your folder
     folder_path = r'C:\Users\natha\OneDrive\Documents\CodeInstall'
     path_1 = get_image_paths(folder_path)
 
-    pycharm_paths = [f_path for f_path in path_1 if "pcsetup" in f_path]
+    pycharm_paths = [f_path for f_path in path_1 if titles in f_path]
 
 
     ## Check if the first desired text is present
@@ -467,7 +480,7 @@ b = tk.Button(
     text='Install',
     command=download_application,
 )
-b.place(relx=0.5, rely=0.3, anchor=tk.CENTER)
+b.place(relx=0.5, rely=0.37, anchor=tk.CENTER)
 b.configure(bg ="grey")
 
 
@@ -476,13 +489,13 @@ text_label.configure(bg="purple")
 text_label.pack(side=tk.TOP)
 
 textbox = tk.Text(win, height=1, width=30)
-textbox.place(relx=0.5, rely=0.2, anchor=tk.CENTER)
+#textbox.place(relx=0.5, rely=0.2, anchor=tk.CENTER)
 
 
 ## Added loading/done label
 label = tk.Label(win, text = "Waiting for Command")
 label.configure(bg="purple")
-label.place(relx=0.5, rely=0.25, anchor=tk.CENTER)
+label.place(relx=0.5, rely=0.3, anchor=tk.CENTER)
 
 
 label_ide = tk.Label(win, text = "")
@@ -528,6 +541,19 @@ image = ImageTk.PhotoImage(image)
 
 image_label = tk.Label(win, image =image)
 image_label.place(relx=0.5, rely=0.50, anchor=tk.CENTER)
+
+
+options = ["Default","Python", "PyCharm", "Java", "IntelliJ"]
+
+
+selected_option = tk.StringVar(win)
+selected_option.set(options[0])  # Set default option
+
+# Create the OptionMenu widget
+dropdown_menu = tk.OptionMenu(win, selected_option, *options, command=on_select)
+dropdown_menu.place(relx=0.5, rely=0.20, anchor=tk.CENTER)
+
+
 
 win.configure(bg="purple")
 win.mainloop()
