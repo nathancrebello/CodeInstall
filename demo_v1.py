@@ -22,7 +22,7 @@ def is_admin():
 def run_as_admin():
     if is_admin():
         return
-    ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, f'"{sys.argv[0]}"', None, 1)
+    ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, f'"{sys.argv[0]}"', None, 0)
     sys.exit()
 
 run_as_admin()
@@ -35,23 +35,21 @@ win = tk.Tk()
 ## yes button
 def on_yes_button_click():
     label_ide.config(text="")
-    textbox.insert("1.0", "Write code to download PyCharm")
-    b_yes.configure(state = tk.DISABLED, bg="green") 
-    b_no.configure(state = tk.DISABLED, bg="red")
-    b_yes.pack_forget()
-    b_no.pack_forget() 
+    textbox.insert("1.0", "download PyCharm")
+    b_yes.place_forget()
+    b_no.place_forget()
     win.update()
     download_application()
 
 ## No button
 def on_no_button_click():
     label_ide.config(text="")
-    b_yes.configure(state = tk.DISABLED, bg="green") 
-    b_no.configure(state = tk.DISABLED, bg="red")
-    b_yes.pack_forget()
-    b_no.pack_forget()
-
+    b_yes.place_forget()
+    b_no.place_forget()
+    b.configure(state=tk.NORMAL, bg = "grey")
+    label.config(text="Waiting for command")
     win.update()
+
 
 
 def get_image_paths(folder_path):
@@ -122,7 +120,7 @@ def locate_image_with_retries(image_path, max_retries=3):
             except pyautogui.ImageNotFoundException:
                 #print("not found")
                 pass
-            time.sleep(1)  # Add a small delay between retries
+            #time.sleep(1)  # Add a small delay between retries
         return None
 
 
@@ -299,20 +297,22 @@ def download_application():
 
     
     if titles == "Python":
+        label_ide.place(relx=0.50, rely=0.7, anchor=tk.CENTER)
         label_ide.config(text= "I see that you've downloaded python...download IDE?")
+        
+
         win.update_idletasks()
 
         b_yes.place(relx=0.45, rely=0.8, anchor=tk.CENTER)
-        b_yes.configure(command=on_yes_button_click, state=tk.NORMAL)
+        b_yes.configure(command=on_yes_button_click, state=tk.NORMAL, bg = "green")
 
-
+        
         b_no.place(relx=0.55, rely=0.8, anchor=tk.CENTER)
-        b_no.configure(command=on_no_button_click, state=tk.NORMAL)
-
+        b_no.configure(command=on_no_button_click, state=tk.NORMAL, bg = "red")
 
         textbox.delete("1.0", tk.END)
         win.update()
-        textbox.insert("1.0", "Write code to download PyCharm")
+        textbox.insert("1.0", "download PyCharm")
         win.update()
         textbox.delete("1.0", tk.END)
         textbox.insert("1.0", "")
@@ -327,13 +327,26 @@ def download_application():
 
     while matching_window_titles[0].strip().lower() in [title.strip().lower() for title in gw.getAllTitles()]:
         print("Still there")
+        if titles == "PyCharm":
+            location = locate_image_with_retries(r'C:\Users\natha\OneDrive\Documents\CodeInstall\Images\e.png')
+            if location:
+                text_x, text_y = location[0] + location[2] / 2, location[1] + location[3] / 2
+                pyautogui.moveTo(text_x, text_y, duration=0.5)
+                pyautogui.click()
+                pyautogui.moveTo(text_x+50, text_y+50)
+                print("found "+ pathy)
+                # Update last click time
+                last_click_time = time.time()
+        
+
+
+
+
     print("Not anymore")
     open_application()
 
-
-            
-
-
+    label.config(text="Waiting for Command")
+    
     b.configure(command=download_application, state=tk.NORMAL)
     b.config(text = "Install")
 
@@ -348,10 +361,6 @@ def open_application():
 
     search_folder(r'C:/', titles)
 
-    
-
-
-
     setup_application()
 
 
@@ -359,33 +368,16 @@ def open_application():
 
 def setup_application():
 
+    time.sleep(2)
 
 
-    time.sleep(10)
-    
-    all_windows = gw.getAllTitles()
-
-
-
-    desktop = Desktop(backend="uia")
-
-    ## Catch index error
-    tk_window = [title for title in all_windows if "tk" in title]   
-    window = desktop.window(title=tk_window[0])
-
-    window.set_focus()
-
-    time.sleep(10)
-
-
-    print("waited twenty seconds")
+    print("waited two seconds")
 
     if "pycharm" in user_input.lower():
         global titles
         titles = "PyCharm"
     if "python" in user_input.lower():
         titles = "Python"
-        #os.system("pip install virtual env")
     if "java" in user_input.lower():
         titles = "Java"
     if "pcsetup" in user_input.lower():
@@ -427,11 +419,16 @@ def setup_application():
                     pyautogui.moveTo(text_x, text_y, duration=0.5)
                     pyautogui.click()
                     pyautogui.moveTo(text_x+50, text_y+50)
+
                     print("found "+ pathy)
 
                     # Update last click time
                     last_click_time = time.time()
-                    
+                    if(pathy==r'C:/Users/natha/OneDrive/Documents/CodeInstall/Images/pcsetup/a.png'):
+                        time.sleep(6)
+                        print("WAITINGGG")
+
+
                 else:
                     print("cant find "+pathy)
                 #else:
@@ -445,7 +442,21 @@ def setup_application():
 
     except KeyboardInterrupt:
         print("Capturing stopped.")
+    
+    
+    popup_window = tk.Toplevel(win)
+    popup_window.title("Pop-up Window")
 
+
+    popup_window.geometry("400x200")
+
+    label_close = tk.Label(popup_window, text="All Set UP!")
+    label_close.pack(padx=10, pady=10)
+
+    close_button = tk.Button(popup_window, text="Close", command=popup_window.destroy)
+    close_button.pack(pady=10)
+
+    popup_window.attributes("-topmost", True)
 
 
 ## Setting window size, buttons, labels, and mainloop
@@ -490,27 +501,33 @@ b_yes = tk.Button(win, text="Yes", command=on_yes_button_click)
 b_no = tk.Button(win, text="No", command=on_no_button_click)
 
 
+text_widget = tk.Label(win, text = "For Application to Work, Do Not Click Cursor \n After Pressing Install")
+
+# Set the font size (change 'Helvetica' to your desired font family)
+text_widget.configure(font=('Helvetica', 15), bg = "purple")
+
+# Pack the Text widget
+text_widget.place(relx=0.5, rely=0.9, anchor=tk.CENTER)
+
+#popup_window1 = tk.Toplevel(win)
+#popup_window1.title("CodeInstall Instructions")
+
+
+#popup_window1.geometry("400x200")
+#label_instr = tk.Label(popup_window1, text="Do not click cursor after pressing install. \n This lets the software complete its process")
+#label_instr.pack(padx=10, pady=10)
+
+#close_button = tk.Button(popup_window1, text="Close", command=popup_window1.destroy)
+#close_button.pack(pady=10)
+
+#popup_window1.attributes("-topmost", True)
+
 ## Creating image
 image = Image.open(r'C:\Users\natha\OneDrive\Documents\CodeInstall\Images\logo.png')
 image = ImageTk.PhotoImage(image)
 
 image_label = tk.Label(win, image =image)
 image_label.place(relx=0.5, rely=0.50, anchor=tk.CENTER)
-
-
-
-#b_yes.place(relx=0.45, rely=0.8, anchor=tk.CENTER)
-
-
-#b_no.place(relx=0.55, rely=0.8, anchor=tk.CENTER)
-b_yes.pack()
-b_no.pack()
-
-
-b_yes.configure(state = tk.DISABLED, bg="green") 
-b_no.configure(state = tk.DISABLED, bg="red")
-b_yes.pack_forget()
-b_no.pack_forget()
 
 win.configure(bg="purple")
 win.mainloop()
