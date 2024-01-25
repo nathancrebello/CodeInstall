@@ -85,9 +85,13 @@ def test():
 
     ## Assistant
 
+ 
+    instr = "Write python script to download installer and ALWAYS OPEN with os.startfile(filename). System is windows, save installer to Downloads."
+
+
     assistant = client.beta.assistants.create(
         name = "Code Assistant",
-        instructions = "Write python script to download installer and ALWAYS OPEN with os.startfile(filename). System is windows, save installer to Downloads.",
+        instructions = instr,
         #use this download link for java: https://javadl.oracle.com/webapps/download/AutoDL?BundleId=249203_b291ca3e0c8548b5a51d5a5f50063037
         tools = [{"type": "code_interpreter"}],
         model = "gpt-3.5-turbo"
@@ -157,7 +161,6 @@ def test():
     tess.pytesseract.tesseract_cmd = r'C:\Users\natha\AppData\Local\Programs\Tesseract-OCR\tesseract.exe'
 
 
-    
     ## Get Python installer window
     all_windows = gw.getAllTitles()
 
@@ -443,7 +446,11 @@ to click
    ie. If there is no "add path" do "next". If no "next", then finish. -- DONE
 
 
-## Much better, need to figure out why "blue" next wont click. Also need to work on heirarchy like if next and add are on same page, click add first".
+## Need to work on heirarchy like if next and add are on same page, click add first".
 
-## Figure out filtering tittle thing
+## Figure out filtering title thing
+
+## Maybe have a section to download applications and a section to open applications.
+
+## Figure out installing airflow
 '''

@@ -24,7 +24,7 @@ def is_admin():
 def run_as_admin():
     if is_admin():
         return
-    ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, f'"{sys.argv[0]}"', None, 0)
+    ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, f'"{sys.argv[0]}"', None, 1)
     sys.exit()
 
 run_as_admin()
@@ -57,6 +57,7 @@ def on_no_button_click():
     b_yes.place_forget()
     b_no.place_forget()
     b.configure(state=tk.NORMAL, bg = "grey")
+    dropdown_menu.configure(state = tk.NORMAL)
     label.config(text="Waiting for command")
     win.update()
 
@@ -157,7 +158,7 @@ def on_select(value):
         titles = "PyCharm"
     if value.lower() == "python":
         titles = "Python"
-        print("python")
+        #print("python")
     if value.lower() == "java":
         titles = "Java"
     if value.lower() == "intellij":
@@ -175,14 +176,21 @@ def download_application():
 
     print("titles")
     b.configure(state = tk.DISABLED, bg="grey")
+    dropdown_menu.configure(state = tk.DISABLED)
     ## Updating label to loading
     label.config(text="Loading")
-    win.update()
-
-    #user_input = textbox.get("1.0", tk.END).strip()
- 
+    win.update() 
 
     print("User input:", titles)
+
+    if titles == None:
+        label.config(text = "Please select a valid download")
+        b.configure(state= tk.NORMAL, bg = "grey")
+        dropdown_menu.configure(state = tk.NORMAL)
+
+        return
+
+
     # Update the text_label with the user input
     text_label.config(text="Welcome to Code-Install, the easy installer")
 
@@ -376,6 +384,8 @@ def download_application():
     
     b.configure(command=download_application, state=tk.NORMAL)
     b.config(text = "Install")
+
+    dropdown_menu.configure(state = tk.NORMAL)
 
 
 

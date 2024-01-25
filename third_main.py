@@ -236,6 +236,8 @@ def test():
 
     print(modified_paths)
 
+    time.sleep(5)
+
     # Capture and compare screenshots every two seconds
     count =0
     try:
@@ -280,7 +282,7 @@ def test():
     win.after(5000, lambda: label.config(text="Waiting for Command"))
     win.update()
 
-    '''
+    
     if titles == "Python":
         label_ide.config(text= "I see that you've downloaded python...download IDE?")
         win.update_idletasks()
@@ -304,7 +306,7 @@ def test():
         win.update()
 
         
-    '''
+    
 
     b.configure(command=test, state=tk.NORMAL)
     b.config(text = "Install")

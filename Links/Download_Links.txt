@@ -1,0 +1,20 @@
+python : https://www.python.org/ftp/python/3.9.7/python-3.9.7-amd64.exe
+pycharm : https://download.jetbrains.com/python/pycharm-community-2021.3.2.exe
+java : https://download.oracle.com/java/21/latest/jdk-21_windows-x64_bin.msi
+node : https://nodejs.org/download/release/v15.14.0/node-v15.14.0-x64.msi
+intellij: https://download.jetbrains.com/idea/ideaIC-2021.3.exe
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+								
