@@ -24,7 +24,7 @@ def is_admin():
 def run_as_admin():
     if is_admin():
         return
-    ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, f'"{sys.argv[0]}"', None, 1)
+    ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, f'"{sys.argv[0]}"', None, 0)
     sys.exit()
 
 run_as_admin()
@@ -329,6 +329,22 @@ def download_application():
         win.update()
 
 
+
+        popup_window = tk.Toplevel(win)
+        popup_window.title("Pop-up Window")
+
+
+        popup_window.geometry("400x200")
+
+        label_close = tk.Label(popup_window, text="All Set UP!")
+        label_close.pack(padx=10, pady=10)
+
+        close_button = tk.Button(popup_window, text="Close", command=popup_window.destroy)
+        close_button.pack(pady=10)
+
+        popup_window.attributes("-topmost", True)
+
+
     print(matching_window_titles[0])    
 
 
@@ -381,7 +397,7 @@ def setup_application():
 
     global titles
 
-    time.sleep(2)
+    #time.sleep(2)
 
 
     print("waited two seconds")
@@ -480,12 +496,12 @@ b = tk.Button(
     text='Install',
     command=download_application,
 )
-b.place(relx=0.5, rely=0.37, anchor=tk.CENTER)
+b.place(relx=0.5, rely=0.40, anchor=tk.CENTER)
 b.configure(bg ="grey")
 
 
-text_label = tk.Label(win, text="Welcome to Code-Install, the easy installer")
-text_label.configure(bg="purple")
+text_label = tk.Label(win, text="Welcome to Code-Install, the Easy Installer")
+text_label.configure(font=('Helvetica', 12),bg="purple")
 text_label.pack(side=tk.TOP)
 
 textbox = tk.Text(win, height=1, width=30)
@@ -495,15 +511,15 @@ textbox = tk.Text(win, height=1, width=30)
 ## Added loading/done label
 label = tk.Label(win, text = "Waiting for Command")
 label.configure(bg="purple")
-label.place(relx=0.5, rely=0.3, anchor=tk.CENTER)
+label.place(relx=0.5, rely=0.32, anchor=tk.CENTER)
 
 
 label_ide = tk.Label(win, text = "")
 label_ide.configure(bg="purple")
 label_ide.pack()
 
-label_ide_d = tk.Label(win, text = "Download an application")
-label_ide_d.configure(bg="purple")
+label_ide_d = tk.Label(win, text = "Download, Open, and Set Up an Application")
+label_ide_d.configure(font=('Helvetica', 11),bg="purple")
 label_ide_d.place(relx=0.5, rely=0.10, anchor=tk.CENTER)
 
 
@@ -536,11 +552,11 @@ text_widget.place(relx=0.5, rely=0.9, anchor=tk.CENTER)
 #popup_window1.attributes("-topmost", True)
 
 ## Creating image
-image = Image.open(r'C:\Users\natha\OneDrive\Documents\CodeInstall\Images\logo.png')
+image = Image.open(r'C:\Users\natha\OneDrive\Documents\CodeInstall\Images\logo2.png')
 image = ImageTk.PhotoImage(image)
 
-image_label = tk.Label(win, image =image)
-image_label.place(relx=0.5, rely=0.50, anchor=tk.CENTER)
+image_label = tk.Label(win, image =image, bd = 0)
+image_label.place(relx=0.5, rely=0.55, anchor=tk.CENTER)
 
 
 options = ["Default","Python", "PyCharm", "Java", "IntelliJ"]
@@ -551,7 +567,7 @@ selected_option.set(options[0])  # Set default option
 
 # Create the OptionMenu widget
 dropdown_menu = tk.OptionMenu(win, selected_option, *options, command=on_select)
-dropdown_menu.place(relx=0.5, rely=0.20, anchor=tk.CENTER)
+dropdown_menu.place(relx=0.5, rely=0.18, anchor=tk.CENTER)
 
 
 
