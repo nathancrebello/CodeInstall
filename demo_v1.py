@@ -9,9 +9,11 @@ import pygetwindow as gw
 from PIL import Image, ImageTk
 import ctypes
 import urllib.request
+import subprocess
 
 titles = None
-
+j = 0
+p = 1
 
 ## Check if user is running code as admin
 def is_admin():
@@ -85,19 +87,6 @@ def get_image_paths(folder_path):
 
     return image_paths_array
 
-
-def get_word_after_download(sentence):
-        words = sentence.split()
-        try:
-            index_of_download = words.index("download")
-            if index_of_download < len(words) - 1:
-                return words[index_of_download + 1]
-            else:
-                return "No word after 'download'."
-        except ValueError:
-            return "'download' not found in the sentence."
-
-
 def get_greeting(file_path, user_language):
         greetings = {}
         
@@ -163,7 +152,21 @@ def on_select(value):
         titles = "Java"
     if value.lower() == "intellij":
         titles = "IntelliJ"
+    if value.lower() == "default":
+        titles = None
 
+
+def check_language_installed(language):
+
+    try:
+        result = subprocess.run([language, '--version'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+        if result.returncode == 0:
+            return True, result.stdout.decode('utf-8')
+        else:
+            return False, result.stderr.decode('utf-8')
+    except FileNotFoundError:
+        return False, ""
 
 ## main method that runs ai and other code
 def download_application():
@@ -172,9 +175,11 @@ def download_application():
     global user_input
     global titles
     global result
+    global j
+    global p
     
 
-    print("titles")
+    #print("titles")
     b.configure(state = tk.DISABLED, bg="grey")
     dropdown_menu.configure(state = tk.DISABLED)
     ## Updating label to loading
@@ -189,20 +194,54 @@ def download_application():
         dropdown_menu.configure(state = tk.NORMAL)
 
         return
+    
+
+
+    if titles == "PyCharm":
+        language_installed, output = check_language_installed("python")
+        if language_installed or p==1:
+            print("installed")
+            print(output)
+        else:
+            label.config(text = "Please download python before running")
+            b.configure(state= tk.NORMAL, bg = "grey")
+            dropdown_menu.configure(state = tk.NORMAL)
+            return
+        
+    if titles == "IntelliJ":
+        language_installed, output = check_language_installed("java")
+        if language_installed or j ==1:
+            print("installed")
+            print(output)
+        else:
+            label.config(text = "Please download java before running")
+            b.configure(state= tk.NORMAL, bg = "grey")
+            dropdown_menu.configure(state = tk.NORMAL)
+            return
+        
+    if titles == "Python":
+
+        label.config(text = "Already installed, please select another installation")
+        b.configure(state= tk.NORMAL, bg = "grey")
+        dropdown_menu.configure(state = tk.NORMAL)
+        return
+    
+    if j ==1 and titles == "Java":
+
+        label.config(text = "Already installed, please select another installation")
+        b.configure(state= tk.NORMAL, bg = "grey")
+        dropdown_menu.configure(state = tk.NORMAL)
+        return
 
 
     # Update the text_label with the user input
     text_label.config(text="Welcome to Code-Install, the easy installer")
 
 
-    ## grabbing application name
-    
-
-    #result = get_word_after_download(user_input.lower())
 
 
-    # Example usage:
-    file_path = r'C:\Users\natha\OneDrive\Documents\CodeInstall\Links\Download_Links.txt'  # Replace with the actual file path    
+    # File Path:
+    file_path = r'C:\Users\natha\OneDrive\Documents\CodeInstall\Links\Download_Links.txt'
     
     
     link_result = get_greeting(file_path, titles)
@@ -234,7 +273,7 @@ def download_application():
     tess.pytesseract.tesseract_cmd = r'C:\Users\natha\AppData\Local\Programs\Tesseract-OCR\tesseract.exe'
 
     
-    ## Get Python installer window
+    ## Get all open windows, and grab the installer/tk window
     all_windows = gw.getAllTitles()
 
     print(titles)
@@ -321,6 +360,7 @@ def download_application():
 
     
     if titles == "Python" or titles == "Java":
+
         label_ide.place(relx=0.50, rely=0.7, anchor=tk.CENTER)
         label_ide.config(text= "I see that you've downloaded "+ titles.lower() +"...download IDE?")
     
@@ -332,6 +372,11 @@ def download_application():
         
         b_no.place(relx=0.55, rely=0.8, anchor=tk.CENTER)
         b_no.configure(command=on_no_button_click, state=tk.NORMAL, bg = "red")
+
+        if titles == "Python":
+            p =1
+        if titles == "Java":
+            j =1
 
 
         win.update()
@@ -371,21 +416,26 @@ def download_application():
                 pyautogui.moveTo(text_x+50, text_y+50)
                 print("found "+ pathy)
                 # Update last click time
-                last_click_time = time.time()
-        #if titles == ""
-        
+                last_click_time = time.time()        
     
 
     print("Not anymore")
     if(titles.lower()!= "java" and titles.lower!="python"):
         open_application()
 
-    label.config(text="Waiting for Command")
-    
-    b.configure(command=download_application, state=tk.NORMAL)
-    b.config(text = "Install")
 
-    dropdown_menu.configure(state = tk.NORMAL)
+    if(titles.lower()== "python" or titles.lower() == "java"):
+        b.configure(state = tk.DISABLED, bg="grey")
+        dropdown_menu.configure(state = tk.DISABLED)
+
+    else:
+
+        label.config(text="Waiting for Command")
+        
+        b.configure(command=download_application, state=tk.NORMAL)
+        b.config(text = "Install")
+
+        dropdown_menu.configure(state = tk.NORMAL)
 
 
 
@@ -511,7 +561,7 @@ b.configure(bg ="grey")
 
 
 text_label = tk.Label(win, text="Welcome to Code-Install, the Easy Installer")
-text_label.configure(font=('Helvetica', 12),bg="purple")
+text_label.configure(font=('Helvetica', 14),bg="purple")
 text_label.pack(side=tk.TOP)
 
 textbox = tk.Text(win, height=1, width=30)
@@ -528,7 +578,7 @@ label_ide = tk.Label(win, text = "")
 label_ide.configure(bg="purple")
 label_ide.pack()
 
-label_ide_d = tk.Label(win, text = "Download, Open, and Set Up an Application")
+label_ide_d = tk.Label(win, text = "Download, Open, and Setup a new application")
 label_ide_d.configure(font=('Helvetica', 11),bg="purple")
 label_ide_d.place(relx=0.5, rely=0.10, anchor=tk.CENTER)
 
@@ -543,7 +593,7 @@ b_no = tk.Button(win, text="No", command=on_no_button_click)
 text_widget = tk.Label(win, text = "For Application to Work, Do Not Click Cursor \n After Pressing Install")
 
 # Set the font size (change 'Helvetica' to your desired font family)
-text_widget.configure(font=('Helvetica', 15), bg = "purple")
+text_widget.configure(font=('Helvetica', 12), bg = "purple")
 
 # Pack the Text widget
 text_widget.place(relx=0.5, rely=0.9, anchor=tk.CENTER)
