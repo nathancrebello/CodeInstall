@@ -11,6 +11,19 @@ import ctypes
 import urllib.request
 import subprocess
 
+
+#basedir = os.path.dirname(__file__)
+
+#print(basedir)
+
+
+## Get it to figure out if an application is already installed or not. For example Java.
+##
+##
+
+
+
+
 titles = None
 j = 0
 p = 1
@@ -241,7 +254,7 @@ def download_application():
 
 
     # File Path:
-    file_path = r'C:\Users\natha\OneDrive\Documents\CodeInstall\Links\Download_Links.txt'
+    file_path = 'Links/Download_Links.txt'
     
     
     link_result = get_greeting(file_path, titles)
@@ -269,8 +282,17 @@ def download_application():
     ## Wait for the installer window to open
     time.sleep(5)  # Adjust the delay as needed
 
+
+    tesseract_path = os.getenv('TESSERACT_PATH')
+
+    if tesseract_path:
+        tess.pytesseract.tesseract_cmd = os.path.join(tesseract_path, 'tesseract.exe')
+    else:
+        print("TESSERACT_PATH environment variable is not set. Please set it to the directory containing 'tesseract.exe'.")
+
+
     ## Tesseract path
-    tess.pytesseract.tesseract_cmd = r'C:\Users\natha\AppData\Local\Programs\Tesseract-OCR\tesseract.exe'
+    #tess.pytesseract.tesseract_cmd = r'C:\Users\natha\AppData\Local\Programs\Tesseract-OCR\tesseract.exe'
 
     
     ## Get all open windows, and grab the installer/tk window
@@ -302,7 +324,7 @@ def download_application():
 
 
     # Replace 'your_folder_path' with the actual path to your folder
-    folder_path = r'C:\Users\natha\OneDrive\Documents\CodeInstall'
+    folder_path = r'Images'
     path_1 = get_image_paths(folder_path)
 
     pycharm_paths = [f_path for f_path in path_1 if titles in f_path]
@@ -408,7 +430,7 @@ def download_application():
     while matching_window_titles[0].strip().lower() in [title.strip().lower() for title in gw.getAllTitles()]:
         print("Still there")
         if titles == "PyCharm" or titles == "IntelliJ":
-            location = locate_image_with_retries(r'C:\Users\natha\OneDrive\Documents\CodeInstall\Images\e.png')
+            location = locate_image_with_retries('Images/e.png')
             if location:
                 text_x, text_y = location[0] + location[2] / 2, location[1] + location[3] / 2
                 pyautogui.moveTo(text_x, text_y, duration=0.5)
@@ -474,7 +496,7 @@ def setup_application():
 
 
     # Replace 'your_folder_path' with the actual path to your folder
-    folder_path = r'C:\Users\natha\OneDrive\Documents\CodeInstall'
+    folder_path = 'Images'
     path_1 = get_image_paths(folder_path)
 
     pycharm_paths = [f_path for f_path in path_1 if titles in f_path]
@@ -513,7 +535,7 @@ def setup_application():
 
                     # Update last click time
                     last_click_time = time.time()
-                    if(pathy==r'C:/Users/natha/OneDrive/Documents/CodeInstall/Images/pcsetup/a.png'):
+                    if(pathy=='Images/pcsetup/a.png'):
                         time.sleep(6)
                         print("WAITINGGG")
 
@@ -612,7 +634,7 @@ text_widget.place(relx=0.5, rely=0.9, anchor=tk.CENTER)
 #popup_window1.attributes("-topmost", True)
 
 ## Creating image
-image = Image.open(r'C:\Users\natha\OneDrive\Documents\CodeInstall\Images\logo2.png')
+image = Image.open('Images/logo2.png')
 image = ImageTk.PhotoImage(image)
 
 image_label = tk.Label(win, image =image, bd = 0)
