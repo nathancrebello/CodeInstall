@@ -39,7 +39,7 @@ def is_admin():
 def run_as_admin():
     if is_admin():
         return
-    ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, f'"{sys.argv[0]}"', None, 1)
+    ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, f'"{sys.argv[0]}"', None, 0)
     sys.exit()
 
 run_as_admin()
@@ -181,6 +181,23 @@ def check_language_installed(language):
     except FileNotFoundError:
         return False, ""
 
+
+
+
+
+def search_folder_for_applications(target_folder, search_term):
+    count=0
+    for root, dirs, files in os.walk(target_folder):
+        for file_name in files:
+            if search_term in file_name:
+                full_path = os.path.join(root, file_name)
+                if file_name.endswith(".lnk") and count !=1 and "CodeInstall" not in full_path:
+                    #print("Already Installed")
+                    count=1
+                    return True
+                    
+
+
 ## main method that runs ai and other code
 def download_application():
     
@@ -211,6 +228,16 @@ def download_application():
 
 
     if titles == "PyCharm":
+        
+
+        
+        if search_folder_for_applications("C:/", "PyCharm Community Edition 2021.3.2") == True:
+            label.config(text = "Already installed, please select another installation")
+            b.configure(state= tk.NORMAL, bg = "grey")
+            dropdown_menu.configure(state = tk.NORMAL)
+            return
+
+
         language_installed, output = check_language_installed("python")
         if language_installed or p==1:
             print("installed")
@@ -222,6 +249,14 @@ def download_application():
             return
         
     if titles == "IntelliJ":
+
+        if search_folder_for_applications("C:/", "IntelliJ IDEA Community Edition 2021.3") == True:
+            label.config(text = "Already installed, please select another installation")
+            b.configure(state= tk.NORMAL, bg = "grey")
+            dropdown_menu.configure(state = tk.NORMAL)
+            return
+
+
         language_installed, output = check_language_installed("java")
         if language_installed or j ==1:
             print("installed")
@@ -234,17 +269,24 @@ def download_application():
         
     if titles == "Python":
 
-        label.config(text = "Already installed, please select another installation")
-        b.configure(state= tk.NORMAL, bg = "grey")
-        dropdown_menu.configure(state = tk.NORMAL)
-        return
+        language_installed, output = check_language_installed("python")
+        if language_installed or p==1:
+            label.config(text = "Already installed, please select another installation")
+            b.configure(state= tk.NORMAL, bg = "grey")
+            dropdown_menu.configure(state = tk.NORMAL)
+            return
     
-    if j ==1 and titles == "Java":
+    if titles == "Java":
 
-        label.config(text = "Already installed, please select another installation")
-        b.configure(state= tk.NORMAL, bg = "grey")
-        dropdown_menu.configure(state = tk.NORMAL)
-        return
+
+        language_installed, output = check_language_installed("java")
+        if language_installed or j==1:
+
+
+            label.config(text = "Already installed, please select another installation")
+            b.configure(state= tk.NORMAL, bg = "grey")
+            dropdown_menu.configure(state = tk.NORMAL)
+            return
 
 
     # Update the text_label with the user input
@@ -634,7 +676,7 @@ text_widget.place(relx=0.5, rely=0.9, anchor=tk.CENTER)
 #popup_window1.attributes("-topmost", True)
 
 ## Creating image
-image = Image.open('Images/logo2.png')
+image = Image.open('Images/logo3.png')
 image = ImageTk.PhotoImage(image)
 
 image_label = tk.Label(win, image =image, bd = 0)
