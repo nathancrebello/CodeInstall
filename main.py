@@ -81,7 +81,7 @@ def test():
 
     ## Client with Key
 
-    client = OpenAI(api_key="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")
+    client = OpenAI(api_key="OPEN_API_KEY")
 
     ## Assistant
 
