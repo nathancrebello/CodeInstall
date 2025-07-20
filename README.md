@@ -1,1 +1,1 @@
-Simplifying the installation process.
+Very rough code for software that automates downloading/installing/setting up specific IDEs.
