@@ -1,0 +1,65 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environments
+venv/
+ENV/
+env/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Environment Variables
+.env
+
+# Logs
+logs/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Application Specific
+downloads/
+*.exe
+*.msi
+*.dmg
+
+# Claude Code
+.claude/
+
+# Temporary files
+nul
+
+# Old versions (keep for reference, not for production)
+main.py
+second_main.py
+third_main.py
+demo_v1.py
+demo_v1.pyw
+demo_v3.pyw

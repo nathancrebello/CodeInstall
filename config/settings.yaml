@@ -1,0 +1,59 @@
+# General Application Settings
+app:
+  name: "Installer Automation Tool"
+  version: "2.0.0"
+
+# OpenAI Configuration
+openai:
+  # DO NOT commit your API key to version control!
+  # Set this via environment variable: OPENAI_API_KEY
+  api_key: ""  # Leave empty, use environment variable
+  model: "gpt-3.5-turbo"
+  assistant_instructions: |
+    Write python script to download installer and ALWAYS OPEN with os.startfile(filename).
+    System is windows, save installer to Downloads.
+
+# Paths Configuration
+paths:
+  # Tesseract OCR executable path
+  # Update this to your Tesseract installation path
+  tesseract_executable: "C:\\Program Files\\Tesseract-OCR\\tesseract.exe"
+
+  # Directory containing UI element images for matching
+  ui_elements_dir: "assets/ui_elements"
+
+  # Download directory (will use user's Downloads folder if not specified)
+  download_dir: null
+
+  # Log file location
+  log_file: "logs/installer_automation.log"
+
+# Automation Settings
+automation:
+  # Maximum retries for image detection
+  max_retries: 3
+
+  # Delay between retries (seconds)
+  retry_delay: 1.0
+
+  # Timeout for installer operations (seconds)
+  installer_timeout: 10
+
+  # Screenshot comparison delay (seconds)
+  screenshot_delay: 1.0
+
+  # Mouse movement duration (seconds)
+  mouse_duration: 0.5
+
+# Logging Configuration
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR, CRITICAL
+  console: true
+  file: true
+
+# GUI Settings
+gui:
+  window_width: 600
+  window_height: 500
+  theme: "grey"
+  title: "Installer Automation Tool"

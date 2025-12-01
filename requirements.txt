@@ -1,0 +1,16 @@
+# Core Dependencies
+openai>=1.0.0
+pyautogui>=0.9.54
+pytesseract>=0.3.10
+Pillow>=10.0.0
+pygetwindow>=0.0.9
+pywinauto>=0.6.8
+PyYAML>=6.0.1
+
+# Optional: For better clipboard handling
+pyperclip>=1.8.2
+
+# Development Dependencies (optional)
+# pytest>=7.4.0
+# black>=23.0.0
+# flake8>=6.0.0

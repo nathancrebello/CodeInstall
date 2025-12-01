@@ -1,0 +1,58 @@
+# Application Definitions
+# Each application has configuration for downloading and installing
+
+applications:
+  python:
+    display_name: "Python"
+    window_title_match: "Python"
+    download_url: "https://www.python.org/ftp/python/3.11.0/python-3.11.0-amd64.exe"
+    installer_extension: "exe"
+    ui_elements_folder: "Python"
+    post_install_prompt: "Would you like to download PyCharm IDE?"
+    suggested_ide: "pycharm"
+
+  pycharm:
+    display_name: "PyCharm"
+    window_title_match: "PyCharm"
+    download_url: "https://download.jetbrains.com/python/pycharm-community-2023.2.1.exe"
+    installer_extension: "exe"
+    ui_elements_folder: "PyCharm"
+    post_install_prompt: null
+    suggested_ide: null
+
+  java:
+    display_name: "Java"
+    window_title_match: "Java"
+    download_url: "https://javadl.oracle.com/webapps/download/AutoDL?BundleId=249203_b291ca3e0c8548b5a51d5a5f50063037"
+    installer_extension: "exe"
+    ui_elements_folder: "Java"
+    post_install_prompt: "Would you like to download IntelliJ IDEA?"
+    suggested_ide: "intellij"
+
+  intellij:
+    display_name: "IntelliJ IDEA"
+    window_title_match: "IntelliJ"
+    download_url: "https://download.jetbrains.com/idea/ideaIC-2023.2.1.exe"
+    installer_extension: "exe"
+    ui_elements_folder: "IntelliJ"
+    post_install_prompt: null
+    suggested_ide: null
+
+  nodejs:
+    display_name: "Node.js"
+    window_title_match: "Node"
+    download_url: "https://nodejs.org/dist/v18.17.0/node-v18.17.0-x64.msi"
+    installer_extension: "msi"
+    ui_elements_folder: "Node"
+    post_install_prompt: null
+    suggested_ide: null
+
+# Download link mappings for AI-generated installations
+# Format: application_keyword: download_url
+download_links:
+  python: "https://www.python.org/ftp/python/3.11.0/python-3.11.0-amd64.exe"
+  pycharm: "https://download.jetbrains.com/python/pycharm-community-2023.2.1.exe"
+  java: "https://javadl.oracle.com/webapps/download/AutoDL?BundleId=249203_b291ca3e0c8548b5a51d5a5f50063037"
+  intellij: "https://download.jetbrains.com/idea/ideaIC-2023.2.1.exe"
+  node: "https://nodejs.org/dist/v18.17.0/node-v18.17.0-x64.msi"
+  nodejs: "https://nodejs.org/dist/v18.17.0/node-v18.17.0-x64.msi"
