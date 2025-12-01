@@ -50,8 +50,7 @@ downloads/
 *.msi
 *.dmg
 
-# Claude Code
-.claude/
+
 
 # Temporary files
 nul
